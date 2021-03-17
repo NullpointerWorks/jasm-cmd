@@ -33,7 +33,6 @@ import com.nullpointerworks.cmd.jasm.exe.BytecodeExecution;
 */
 public class AssemblerCMD
 {
-	
 	public static void main(String[] args) 
 	{
 		new AssemblerCMD(args);
@@ -42,7 +41,6 @@ public class AssemblerCMD
 	public AssemblerCMD(String[] args)
 	{
 		if (args.length < 1) return;
-		
 		String option = args[0];
 		
 		/*

@@ -2,7 +2,9 @@ package com.nullpointerworks.cmd.jasm.asm;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.nullpointerworks.jasm.asm.VerboseListener;
@@ -23,11 +25,13 @@ public class SourceAssembler
 
 	private String inFile;
 	private String outFile;
+	private List<String> logText;
 	
 	public SourceAssembler()
 	{
 		inFile = "";
 		outFile = "";
+		logText = new ArrayList<String>();
 		vlParsing = (e)->{};
 		vlAssembling = (e)->{};
 	}
@@ -44,17 +48,38 @@ public class SourceAssembler
 	
 	public void setParserVerbose(boolean b) 
 	{
-		
+		if (b)
+		{
+			vlParsing = (e)->
+			{
+				writeToFile(e);
+			};
+		}
+		else
+		{
+			vlParsing = (e)->{};
+		}
 	}
-	
+
 	public void setAssemblerVerbose(boolean b) 
 	{
-		
+		if (b)
+		{
+			vlAssembling = (e)->
+			{
+				writeToFile(e);
+			};
+		}
+		else
+		{
+			vlAssembling = (e)->{};
+		}
 	}
 	
 	public void assemble()
 	{
 		if (!errorCheck()) return;
+		logText.clear();
 		
 		/*
 		 * the parser formats the source code writing
@@ -121,24 +146,47 @@ public class SourceAssembler
 		{
 			e.printStackTrace();
 		}
+		
+		/*
+		 * print log of lines were collected
+		 */
+		if (logText.size() > 0)
+		{
+			try
+			{
+				FileWriter writer = new FileWriter( outFile+".log" );
+			    for(String str: logText) 
+			    {
+			        writer.write(str+"\n");
+			        writer.flush();
+			    }
+			    writer.close();
+			}
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private boolean errorCheck() 
 	{
 		if (inFile.length() < 1)
 		{
-			
 			return false;
 		}
 		
 		if (outFile.length() < 1)
 		{
-			
 			return false;
 		}
 		
-		
 		return true;
+	}
+	
+	private void writeToFile(String msg) 
+	{
+		logText.add(msg);
 	}
 	
 	private void printMachineCode(int offset, List<Integer> code) 

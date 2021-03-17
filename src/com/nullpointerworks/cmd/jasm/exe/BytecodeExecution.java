@@ -90,7 +90,7 @@ public class BytecodeExecution implements InterruptListener
 		vm.setMemorySize(2048);
 		vm.setInterruptListener(this);
 		vm.setOrigin(origin);
-		vm.setMemory(0, code);
+		vm.setMemory(0,code);
 		
 		boolean running = !vm.hasException();
 		while(running) 

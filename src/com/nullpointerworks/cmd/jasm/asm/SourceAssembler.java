@@ -18,7 +18,7 @@ import com.nullpointerworks.jasm.asm.parser.SourceFileParser;
 
 public class SourceAssembler 
 {
-	public static final String Version = "1.0.0 beta";
+	public static final String Version = "1.0.0";
 	
 	private VerboseListener vlParsing;
 	private VerboseListener vlAssembling;

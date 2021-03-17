@@ -1,91 +1,34 @@
-package com.nullpointerworks.cmd.jasm;
+package com.nullpointerworks.cmd.jasm.exe;
 
-import static com.nullpointerworks.jasm.vm.VMRegister.*;
+import static com.nullpointerworks.jasm.vm.VMRegister.REG_A;
+import static com.nullpointerworks.jasm.vm.VMRegister.REG_B;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.nullpointerworks.jasm.asm.VerboseListener;
-import com.nullpointerworks.jasm.asm.assembler.Assembler;
-import com.nullpointerworks.jasm.asm.assembler.SourceCodeAssembler;
-import com.nullpointerworks.jasm.asm.error.BuildError;
-import com.nullpointerworks.jasm.asm.parser.Definition;
-import com.nullpointerworks.jasm.asm.parser.Parser;
-import com.nullpointerworks.jasm.asm.parser.SourceCode;
-import com.nullpointerworks.jasm.asm.parser.SourceFileParser;
 import com.nullpointerworks.jasm.vm.BytecodeVirtualMachine;
 import com.nullpointerworks.jasm.vm.InterruptListener;
 import com.nullpointerworks.jasm.vm.Register;
 import com.nullpointerworks.jasm.vm.VMProcessException;
 import com.nullpointerworks.jasm.vm.VirtualMachine;
 
-/*
-
-# version
--version | -v					requests the version of this assembler
-
-# source assembling
--asm							ask to assemble source code	
--i<...>							specifies the program entry file
--o<...>							specifies the output filename
--v<...>							verbose parser and/or assembling flags
-
-
-
-
-*/
-public class MainConsoleVM implements InterruptListener, VerboseListener
+public class BytecodeExecution implements InterruptListener
 {
-	public static void main(String[] args) 
+	public static final String Version = "1.0.0 beta";
+	
+	private int origin;
+	private List<Integer> code;
+	
+	public BytecodeExecution()
 	{
-		new MainConsoleVM(args);
+		origin = 0;
+		code = new ArrayList<Integer>();
+		
 	}
 	
-	public MainConsoleVM(String[] args)
+	public void execute()
 	{
 		
-		
-		
-		
-		
-		
-		
-		
-		/*
-		 * the parser formats the source code writing
-		 */
-		Parser parser = new SourceFileParser();
-		//parser.setVerboseListener(this);
-		parser.parse("playground.jasm");
-		if(parser.hasErrors())
-		{
-			List<BuildError> errors = parser.getErrors();
-			for (BuildError be : errors)
-			{
-				System.out.println( be.getDescription() );
-			}
-			return;
-		}
-		List<SourceCode> sourcecode = parser.getSourceCode();
-		List<Definition> definitions = parser.getDefinitions();
-		int origin = parser.getOrigin();
-		
-		/*
-		 * the assembler turns source code objects into machine code
-		 */
-		Assembler assemble = new SourceCodeAssembler();
-		//assemble.setVerboseListener(this);
-		assemble.draft(sourcecode, definitions, origin);
-		if(assemble.hasErrors())
-		{
-			List<BuildError> errors = assemble.getErrors();
-			for (BuildError be : errors)
-			{
-				System.out.println( be.getDescription() );
-			}
-			return;
-		}
-		List<Integer> code = assemble.getMachineCode();
-		//printMachineCode(origin, code);
 		
 		/*
 		 * create virtual machine and run code
@@ -110,11 +53,7 @@ public class MainConsoleVM implements InterruptListener, VerboseListener
 		}
 	}
 	
-	@Override
-	public void onPrint(String msg) 
-	{
-		System.out.println(msg);
-	}
+	
 	
 	@Override
 	public void onInterrupt(VirtualMachine vm, int code) 

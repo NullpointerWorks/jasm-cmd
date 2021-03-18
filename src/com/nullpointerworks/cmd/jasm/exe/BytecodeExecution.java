@@ -13,10 +13,8 @@ import static com.nullpointerworks.jasm.vm.VMRegister.REG_B;
 import static com.nullpointerworks.jasm.vm.VMRegister.REG_C;
 import static com.nullpointerworks.jasm.vm.VMRegister.REG_D;
 
-import com.nullpointerworks.jasm.vm.BytecodeVirtualMachine;
 import com.nullpointerworks.jasm.vm.InterruptListener;
 import com.nullpointerworks.jasm.vm.Register;
-import com.nullpointerworks.jasm.vm.VMProcessException;
 import com.nullpointerworks.jasm.vm.VirtualMachine;
 
 public class BytecodeExecution implements InterruptListener
@@ -24,19 +22,12 @@ public class BytecodeExecution implements InterruptListener
 	public static final String Version = "1.0.0";
 
 	private List<Integer> code;
-	private int origin;
-	private int memorySize;
-	private int speed;
-	
+	private Emulator emu;
 	
 	public BytecodeExecution()
 	{
 		code = new ArrayList<Integer>();
-		origin = 0;
-		memorySize = 2048;
-		speed = 1000;
-		
-		
+		emu = new Emulator();
 	}
 	
 	public void loadFile(String filename)
@@ -76,34 +67,23 @@ public class BytecodeExecution implements InterruptListener
 			
 			code.add(bytecode);
 		}
-		
+	}
+	
+	public void setMemorySize(int size) 
+	{
+		emu.setMemorySize(size);
+	}
+	
+	public void setOrigin(int org) 
+	{
+		emu.setOrigin(org);
 	}
 	
 	public void execute()
 	{
 		if (!errorCheck()) return; // TODO notify about error
-		
-		/*
-		 * create virtual machine and run code
-		 */
-		VirtualMachine vm = new BytecodeVirtualMachine();
-		vm.setMemorySize(2048);
-		vm.setInterruptListener(this);
-		vm.setOrigin(origin);
-		vm.setMemory(0,code);
-		
-		boolean running = !vm.hasException();
-		while(running) 
-		{
-			vm.nextInstruction();
-			running = !vm.hasException();
-		}
-		
-		while (vm.hasException())
-		{
-			VMProcessException ex = vm.getException();
-			System.err.println( ex.getMemoryTrace() );
-		}
+		emu.setCode(code);
+		emu.start();
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package com.nullpointerworks.cmd.jasm;
 
 import com.nullpointerworks.cmd.jasm.asm.SourceAssembler;
 import com.nullpointerworks.cmd.jasm.exe.BytecodeExecution;
+import com.nullpointerworks.jasm.asm.ParserUtility;
 
 /*
 
@@ -83,14 +84,22 @@ public class AssemblerCMD
 				if (arg.startsWith("-mem<"))
 				{
 					String mem = arg.substring(5, arg.length()-1);
-					
+					if (ParserUtility.isInteger(mem))
+					{
+						int size = Integer.parseInt(mem);
+						exe.setMemorySize(size);
+					}
 					continue;
 				}
 				
 				if (arg.startsWith("-org<"))
 				{
 					String org = arg.substring(5, arg.length()-1);
-					
+					if (ParserUtility.isInteger(org))
+					{
+						int origin = Integer.parseInt(org);
+						exe.setOrigin(origin);
+					}
 					continue;
 				}
 				
@@ -161,6 +170,5 @@ public class AssemblerCMD
 		 * error
 		 */
 		System.out.println("Unrecognized command: "+option+"\n");
-		
 	}
 }

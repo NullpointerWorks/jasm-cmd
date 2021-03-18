@@ -22,7 +22,7 @@ public class SourceAssembler
 	
 	private VerboseListener vlParsing;
 	private VerboseListener vlAssembling;
-
+	
 	private String inFile;
 	private String outFile;
 	private List<String> logText;

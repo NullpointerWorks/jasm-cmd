@@ -8,11 +8,11 @@ public abstract class ManagedLoop implements Runnable
 	
 	private Thread thread;
 	private boolean running = true;
-	private int target_update = 30; 
+	private int target_update = 1000; // 1 kHz
 	private long ideal_time = NANO / target_update;
 	private long nanotime_prev;
 	
-	public void setTargetRate(int fps) 
+	public void setCycleRate(int fps) 
 	{
 		target_update = fps;
 		ideal_time = NANO / target_update;

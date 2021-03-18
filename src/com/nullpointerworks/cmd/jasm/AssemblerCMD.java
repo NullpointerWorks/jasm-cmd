@@ -4,36 +4,6 @@ import com.nullpointerworks.cmd.jasm.asm.SourceAssembler;
 import com.nullpointerworks.cmd.jasm.exe.BytecodeExecution;
 import com.nullpointerworks.jasm.asm.ParserUtility;
 
-/*
-
-## version
--version						requests the version of this assembler.
-
-
-## source assembling
--asm							requests to assemble source code.
--in<...>						specifies the program entry file.
--out<...>						specifies the output filename.
-
-# optional
--log<...>						writes parser and/or assembler information to a file.
-	-log<P> 					Logs parser info to a file.
-	-log<A> 					Logs assembler info to a file.
-	-log<PA> 					Logs parser and assembler info to a file.
-
-
-## execution of a binary
--exe							requests to execute a bytecode file.
--in<...>						specifies the input file to execute.
-
-# optional
--mem<...>						set memory size.
--org<...>						set instruction pointer origin.
--spd<...>						set the VM speed in cycles per second.
-
-
-
-*/
 public class AssemblerCMD
 {
 	public static void main(String[] args) 
@@ -106,7 +76,11 @@ public class AssemblerCMD
 				if (arg.startsWith("-spd<"))
 				{
 					String speed = arg.substring(5, arg.length()-1);
-					
+					if (ParserUtility.isInteger(speed))
+					{
+						int s = Integer.parseInt(speed);
+						exe.setCycleRate(s);
+					}
 					continue;
 				}
 				
@@ -156,6 +130,7 @@ public class AssemblerCMD
 					{
 						asm.setAssemblerVerbose(true);
 					}
+					continue;
 				}
 				
 				System.out.println("Argument not recognized: "+arg);

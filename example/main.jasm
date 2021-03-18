@@ -1,0 +1,10 @@
+.inc "defines.jasm"
+
+main:
+	load a,20
+loop:
+	int OUT_A
+	dec a
+	jne loop
+	int EXIT
+	

@@ -78,10 +78,16 @@ public class BytecodeExecution implements InterruptListener
 	{
 		emu.setOrigin(org);
 	}
+
+	public void setCycleRate(int s) 
+	{
+		emu.setCycleRate(s);
+	}
 	
 	public void execute()
 	{
 		if (!errorCheck()) return; // TODO notify about error
+		emu.setInterruptListener(this);
 		emu.setCode(code);
 		emu.start();
 	}
@@ -127,10 +133,6 @@ public class BytecodeExecution implements InterruptListener
 	private boolean errorCheck() 
 	{
 		if (code.size() < 1) return false;
-		
-		
-		
-		
 		return true;
 	}
 	

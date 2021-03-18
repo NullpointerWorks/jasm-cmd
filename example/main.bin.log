@@ -1,0 +1,30 @@
+-------------------------------
+Parsing Start
+
+Source Files
+  Main:    main.jasm
+  Include: defines.jasm
+
+Linker
+  D:\Development\Projects\jasm\assemblerCMD\jasm-cmd\example\
+
+Information
+  Included files: 1
+  Definitions:    2
+  Lines of code:  10
+  Errors:         0
+
+Parsing End
+-------------------------------
+-------------------------------
+Assembler Start
+
+Definitions
+  EXIT = 0
+  OUT_A = 1
+
+Labels
+  loop: 0x2
+
+Assembler End
+-------------------------------

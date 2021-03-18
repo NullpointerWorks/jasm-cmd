@@ -11,9 +11,9 @@ public class Emulator extends ManagedLoop
 {
 	private VirtualMachine vm;
 	private List<Integer> code;
+	private InterruptListener listener;
 	private int origin;
 	private int memorySize;
-	private InterruptListener listener;
 	
 	public Emulator()
 	{
@@ -48,8 +48,8 @@ public class Emulator extends ManagedLoop
 	public void onInit() 
 	{
 		vm.setInterruptListener(listener);
-		vm.setOrigin(origin);
 		vm.setMemorySize(memorySize);
+		vm.setOrigin(origin);
 		vm.setMemory(0,code);
 		if (vm.hasException()) stop();
 	}
@@ -71,5 +71,6 @@ public class Emulator extends ManagedLoop
 		}
 		vm = null;
 		code = null;
+		listener = null;
 	}
 }

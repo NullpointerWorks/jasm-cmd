@@ -11,8 +11,8 @@
 -log<...>						writes parser and/or assembler information to a file.
 	-log<P> 					Logs parser info to a file.
 	-log<A> 					Logs assembler info to a file.
-	-log<PA> 					Logs parser and assembler info to a file.
-
+	-log<M> 					Logs machine code output.
+	-log<PAM> 					Writes parser, assembler and machine code to a file.
 
 ## execution of a binary
 -exe							requests to execute a bytecode file.

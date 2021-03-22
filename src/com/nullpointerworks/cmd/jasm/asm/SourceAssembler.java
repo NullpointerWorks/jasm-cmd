@@ -22,6 +22,7 @@ public class SourceAssembler
 	
 	private VerboseListener vlParsing;
 	private VerboseListener vlAssembling;
+	private VerboseListener vlMachineOut;
 	
 	private String inFile;
 	private String outFile;
@@ -29,11 +30,18 @@ public class SourceAssembler
 	
 	public SourceAssembler()
 	{
+		logText = new ArrayList<String>();
+		reset();
+	}
+	
+	public void reset()
+	{
 		inFile = "";
 		outFile = "";
-		logText = new ArrayList<String>();
+		logText.clear();
 		vlParsing = (e)->{};
 		vlAssembling = (e)->{};
+		vlMachineOut = (e)->{};
 	}
 	
 	public void setInputFile(String in)
@@ -48,32 +56,20 @@ public class SourceAssembler
 	
 	public void setParserVerbose(boolean b) 
 	{
-		if (b)
-		{
-			vlParsing = (e)->
-			{
-				writeToFile(e);
-			};
-		}
-		else
-		{
-			vlParsing = (e)->{};
-		}
+		if (b) {vlParsing = (e)->{writeToFile(e);};}
+		else {vlParsing = (e)->{};}
 	}
-
+	
 	public void setAssemblerVerbose(boolean b) 
 	{
-		if (b)
-		{
-			vlAssembling = (e)->
-			{
-				writeToFile(e);
-			};
-		}
-		else
-		{
-			vlAssembling = (e)->{};
-		}
+		if (b) {vlAssembling = (e)->{writeToFile(e);};}
+		else {vlAssembling = (e)->{};}
+	}
+	
+	public void setMachineCodeVerbose(boolean b) 
+	{
+		if (b) {vlMachineOut = (e)->{writeToFile(e);};}
+		else {vlMachineOut = (e)->{};}
 	}
 	
 	public void assemble()
@@ -98,14 +94,14 @@ public class SourceAssembler
 		}
 		List<SourceCode> sourcecode = parser.getSourceCode();
 		List<Definition> definitions = parser.getDefinitions();
-		int origin = parser.getOrigin();
+		//int origin = parser.getOrigin();
 		
 		/*
 		 * the assembler turns source code objects into machine code
 		 */
 		Assembler assemble = new SourceCodeAssembler();
 		assemble.setVerboseListener(vlAssembling);
-		assemble.draft(sourcecode, definitions, origin);
+		assemble.draft(sourcecode, definitions);
 		if(assemble.hasErrors())
 		{
 			List<BuildError> errors = assemble.getErrors();
@@ -152,6 +148,8 @@ public class SourceAssembler
 		 */
 		if (logText.size() > 0)
 		{
+			printMachineCode(0, code);
+			
 			try
 			{
 				FileWriter writer = new FileWriter( outFile+".log" );
@@ -191,8 +189,8 @@ public class SourceAssembler
 	
 	private void printMachineCode(int offset, List<Integer> code) 
 	{
-		onPrint("-------------------------------");
-		onPrint("Machine Code Start\n");
+		vlMachineOut.onPrint("-------------------------------");
+		vlMachineOut.onPrint("Machine Code Start\n");
 		
 		int it = 0;
 		int leng = ( code.size()+"" ).length();
@@ -216,16 +214,11 @@ public class SourceAssembler
 			
 			String addr = padding + String.format(paddingFormat, it);
 			addr = "[ "+addr.substring(leng)+" ] ";
-			onPrint(addr+s1+s2+s3+s4);
+			vlMachineOut.onPrint(addr+s1+s2+s3+s4);
 			it++;
 		}
 		
-		onPrint("\nMachine Code End");
-		onPrint("-------------------------------");
-	}
-	
-	private void onPrint(String msg) 
-	{
-		System.out.println(msg);
+		vlMachineOut.onPrint("\nMachine Code End");
+		vlMachineOut.onPrint("-------------------------------");
 	}
 }

@@ -8,7 +8,23 @@ public class AssemblerCMD
 {
 	public static void main(String[] args) 
 	{
+		args = new String[] 
+		{
+			"-asm", 
+			"-in<F:\\Development\\Projects\\jasm\\commandline\\main.jasm>", 
+			"-out<F:\\Development\\Projects\\jasm\\commandline\\main.bin>", 
+			"-log<PAM>",
+		};
 		new AssemblerCMD(args);
+		
+		args = new String[] 
+		{
+			"-exe", 
+			"-in<F:\\Development\\Projects\\jasm\\commandline\\main.bin>",
+			"-spd<50>"
+		};
+		new AssemblerCMD(args);
+		
 	}
 	
 	public AssemblerCMD(String[] args)
@@ -129,6 +145,10 @@ public class AssemblerCMD
 					if (log.contains("A"))
 					{
 						asm.setAssemblerVerbose(true);
+					}
+					if (log.contains("M"))
+					{
+						asm.setMachineCodeVerbose(true);
 					}
 					continue;
 				}

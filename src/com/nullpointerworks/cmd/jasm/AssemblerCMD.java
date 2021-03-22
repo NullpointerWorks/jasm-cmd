@@ -24,7 +24,6 @@ public class AssemblerCMD
 			"-spd<50>"
 		};
 		new AssemblerCMD(args);
-		
 	}
 	
 	public AssemblerCMD(String[] args)

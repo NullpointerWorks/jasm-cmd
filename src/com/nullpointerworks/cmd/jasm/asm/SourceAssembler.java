@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nullpointerworks.jasm.asm.VerboseListener;
+import com.nullpointerworks.jasm.asm.error.BuildError;
 import com.nullpointerworks.jasm.asm.assembler.Assembler;
 import com.nullpointerworks.jasm.asm.assembler.SourceCodeAssembler;
-import com.nullpointerworks.jasm.asm.error.BuildError;
-import com.nullpointerworks.jasm.asm.parser.Definition;
 import com.nullpointerworks.jasm.asm.parser.Parser;
 import com.nullpointerworks.jasm.asm.parser.SourceCode;
 import com.nullpointerworks.jasm.asm.parser.SourceFileParser;
@@ -93,15 +92,13 @@ public class SourceAssembler
 			return;
 		}
 		List<SourceCode> sourcecode = parser.getSourceCode();
-		List<Definition> definitions = parser.getDefinitions();
-		//int origin = parser.getOrigin();
 		
 		/*
 		 * the assembler turns source code objects into machine code
 		 */
 		Assembler assemble = new SourceCodeAssembler();
 		assemble.setVerboseListener(vlAssembling);
-		assemble.draft(sourcecode, definitions);
+		assemble.draft(sourcecode);
 		if(assemble.hasErrors())
 		{
 			List<BuildError> errors = assemble.getErrors();
@@ -190,7 +187,7 @@ public class SourceAssembler
 	private void printMachineCode(int offset, List<Integer> code) 
 	{
 		vlMachineOut.onPrint("-------------------------------");
-		vlMachineOut.onPrint("Machine Code Start\n");
+		vlMachineOut.onPrint("Byte Code Start\n");
 		
 		int it = 0;
 		int leng = ( code.size()+"" ).length();
@@ -218,7 +215,7 @@ public class SourceAssembler
 			it++;
 		}
 		
-		vlMachineOut.onPrint("\nMachine Code End");
+		vlMachineOut.onPrint("\nByte Code End");
 		vlMachineOut.onPrint("-------------------------------");
 	}
 }

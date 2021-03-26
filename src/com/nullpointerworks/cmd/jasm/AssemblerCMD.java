@@ -8,6 +8,9 @@ public class AssemblerCMD
 {
 	public static void main(String[] args) 
 	{
+		new AssemblerCMD(args);
+		
+		/*
 		args = new String[] 
 		{
 			"-asm", 
@@ -24,6 +27,7 @@ public class AssemblerCMD
 			"-spd<50>"
 		};
 		new AssemblerCMD(args);
+		//*/
 	}
 	
 	public AssemblerCMD(String[] args)

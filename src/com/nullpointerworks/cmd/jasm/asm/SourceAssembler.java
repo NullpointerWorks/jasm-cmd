@@ -9,17 +9,27 @@ import java.util.List;
 
 import com.nullpointerworks.jasm.asm.VerboseListener;
 import com.nullpointerworks.jasm.asm.error.BuildError;
-import com.nullpointerworks.jasm.asm.assembler.Assembler;
-import com.nullpointerworks.jasm.asm.assembler.SourceCodeAssembler;
+
 import com.nullpointerworks.jasm.asm.parser.Parser;
 import com.nullpointerworks.jasm.asm.parser.SourceCode;
 import com.nullpointerworks.jasm.asm.parser.SourceFileParser;
+
+import com.nullpointerworks.jasm.asm.translator.Allocation;
+import com.nullpointerworks.jasm.asm.translator.Definition;
+import com.nullpointerworks.jasm.asm.translator.Label;
+import com.nullpointerworks.jasm.asm.translator.SourceCodeTranslator;
+import com.nullpointerworks.jasm.asm.translator.Translation;
+import com.nullpointerworks.jasm.asm.translator.Translator;
+
+import com.nullpointerworks.jasm.asm.assembler.Assembler;
+import com.nullpointerworks.jasm.asm.assembler.TranslationAssembler;
 
 public class SourceAssembler 
 {
 	public static final String Version = "1.0.0";
 	
 	private VerboseListener vlParsing;
+	private VerboseListener vlTranslating;
 	private VerboseListener vlAssembling;
 	private VerboseListener vlMachineOut;
 	
@@ -39,6 +49,7 @@ public class SourceAssembler
 		outFile = "";
 		logText.clear();
 		vlParsing = (e)->{};
+		vlTranslating = (e)->{};
 		vlAssembling = (e)->{};
 		vlMachineOut = (e)->{};
 	}
@@ -59,6 +70,12 @@ public class SourceAssembler
 		else {vlParsing = (e)->{};}
 	}
 	
+	public void setTranslationVerbose(boolean b) 
+	{
+		if (b) {vlTranslating = (e)->{writeToFile(e);};}
+		else {vlTranslating = (e)->{};}
+	}
+	
 	public void setAssemblerVerbose(boolean b) 
 	{
 		if (b) {vlAssembling = (e)->{writeToFile(e);};}
@@ -77,7 +94,7 @@ public class SourceAssembler
 		logText.clear();
 		
 		/*
-		 * the parser formats the source code writing
+		 * the parser formats the source code to make it consistent
 		 */
 		Parser parser = new SourceFileParser();
 		parser.setVerboseListener(vlParsing);
@@ -85,30 +102,41 @@ public class SourceAssembler
 		if(parser.hasErrors())
 		{
 			List<BuildError> errors = parser.getErrors();
-			for (BuildError be : errors)
-			{
-				System.out.println( be.getDescription() );
-			}
+			for (BuildError be : errors) System.out.println( be.getDescription() );
 			return;
 		}
 		List<SourceCode> sourcecode = parser.getSourceCode();
 		
 		/*
-		 * the assembler turns source code objects into machine code
+		 * turns the source code into an object which is easier to assemble
 		 */
-		Assembler assemble = new SourceCodeAssembler();
-		assemble.setVerboseListener(vlAssembling);
-		assemble.draft(sourcecode);
-		if(assemble.hasErrors())
+		Translator translator = new SourceCodeTranslator();
+		translator.setVerboseListener(vlTranslating);
+		translator.translate(sourcecode);
+		if(translator.hasErrors())
 		{
-			List<BuildError> errors = assemble.getErrors();
-			for (BuildError be : errors)
-			{
-				System.out.println( be.getDescription() );
-			}
+			List<BuildError> errors = translator.getErrors();
+			for (BuildError be : errors) System.out.println( be.getDescription() );
 			return;
 		}
-		List<Integer> code = assemble.getMachineCode();
+		List<Translation> translation 	= translator.getTranslation();
+		List<Definition> definitions 	= translator.getDefinitions();
+		List<Allocation> allocations 	= translator.getAllocations();
+		List<Label> labels 				= translator.getLabels();
+		
+		/*
+		 * the assembler turns the translation objects into bytecode
+		 */
+		Assembler assembler = new TranslationAssembler();
+		assembler.setVerboseListener(vlAssembling);
+		assembler.assemble(translation, definitions, allocations, labels);
+		if(assembler.hasErrors())
+		{
+			List<BuildError> errors = assembler.getErrors();
+			for (BuildError be : errors) System.out.println( be.getDescription() );
+			return;
+		}
+		List<Integer> code = assembler.getMachineCode();
 		
 		/*
 		 * convert integers to bytes and write data to file

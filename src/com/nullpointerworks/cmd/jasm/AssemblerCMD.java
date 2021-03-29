@@ -10,13 +10,13 @@ public class AssemblerCMD
 	{
 		new AssemblerCMD(args);
 		
-		/*
+		//*
 		args = new String[] 
 		{
 			"-asm", 
 			"-in<F:\\Development\\Projects\\jasm\\commandline\\main.jasm>", 
 			"-out<F:\\Development\\Projects\\jasm\\commandline\\main.bin>", 
-			"-log<PAM>",
+			"-log<PTAM>",
 		};
 		new AssemblerCMD(args);
 		
@@ -144,6 +144,10 @@ public class AssemblerCMD
 					if (log.contains("P"))
 					{
 						asm.setParserVerbose(true);
+					}
+					if (log.contains("T"))
+					{
+						asm.setTranslationVerbose(true);
 					}
 					if (log.contains("A"))
 					{

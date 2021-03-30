@@ -220,12 +220,12 @@ public class AssemblerCMD
 		
 		if (plugin != null)
 		{
-			System.out.println("Loaded plugin: "+foundClass.getName()+" ("+plug+").");
+			System.out.println("Loaded plugin: "+foundClass.getName()+"\n    ("+plug+").");
 			exe.addPlugin(plugin);
 		}
 		else
 		{
-			System.err.println("Failed to instantiate "+foundClass.getName()+" ("+plug+").");
+			System.err.println("Failed to instantiate "+foundClass.getName()+"\n    ("+plug+").");
 		}
 	}
 }

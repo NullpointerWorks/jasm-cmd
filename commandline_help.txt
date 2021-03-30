@@ -20,6 +20,5 @@
 
 # optional
 -mem<...>						set memory size.
--org<...>						set instruction pointer origin.
--spd<...>						set the VM speed in cycles per second.
+-speed<...>						set the VM speed in cycles per second.
 

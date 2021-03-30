@@ -1,4 +1,5 @@
 module cmd.assembler 
 {
-	requires libnpw.jasm;
+	requires transitive libnpw.jasm;
+	exports com.nullpointerworks.cmd.jasm.exe.plugin;
 }

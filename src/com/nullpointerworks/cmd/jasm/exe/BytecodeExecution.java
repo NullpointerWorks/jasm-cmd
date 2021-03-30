@@ -8,26 +8,28 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.nullpointerworks.jasm.vm.VMRegister.REG_A;
-import static com.nullpointerworks.jasm.vm.VMRegister.REG_B;
-import static com.nullpointerworks.jasm.vm.VMRegister.REG_C;
-import static com.nullpointerworks.jasm.vm.VMRegister.REG_D;
-
+import com.nullpointerworks.cmd.jasm.exe.plugin.VMPlugin;
 import com.nullpointerworks.jasm.vm.InterruptListener;
-import com.nullpointerworks.jasm.vm.Register;
 import com.nullpointerworks.jasm.vm.VirtualMachine;
 
 public class BytecodeExecution implements InterruptListener
 {
 	public static final String Version = "1.0.0";
 
+	private List<VMPlugin> plugins;
 	private List<Integer> code;
 	private Emulator emu;
 	
 	public BytecodeExecution()
 	{
+		plugins = new ArrayList<VMPlugin>();
 		code = new ArrayList<Integer>();
 		emu = new Emulator();
+	}
+
+	public void addPlugin(VMPlugin plugin) 
+	{
+		plugins.add(plugin);
 	}
 	
 	public void loadFile(String filename)
@@ -101,32 +103,9 @@ public class BytecodeExecution implements InterruptListener
 			return;
 		}
 		
-		if (code == 1)
+		for (VMPlugin plug : plugins)
 		{
-			Register reg = vm.getRegister( REG_A );
-			System.out.println( "A: "+reg.getValue() );
-			return;
-		}
-		
-		if (code == 2)
-		{
-			Register reg = vm.getRegister( REG_B );
-			System.out.println( "B: "+reg.getValue() );
-			return;
-		}
-		
-		if (code == 3)
-		{
-			Register reg = vm.getRegister( REG_C );
-			System.out.println( "C: "+reg.getValue() );
-			return;
-		}
-		
-		if (code == 4)
-		{
-			Register reg = vm.getRegister( REG_D );
-			System.out.println( "D: "+reg.getValue() );
-			return;
+			plug.onInterrupt(vm, code);
 		}
 	}
 	

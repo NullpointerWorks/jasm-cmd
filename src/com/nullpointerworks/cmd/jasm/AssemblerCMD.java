@@ -1,7 +1,12 @@
 package com.nullpointerworks.cmd.jasm;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+
 import com.nullpointerworks.cmd.jasm.asm.SourceAssembler;
 import com.nullpointerworks.cmd.jasm.exe.BytecodeExecution;
+import com.nullpointerworks.cmd.jasm.exe.JarLoader;
+import com.nullpointerworks.cmd.jasm.exe.plugin.VMPlugin;
 import com.nullpointerworks.jasm.asm.ParserUtility;
 
 public class AssemblerCMD
@@ -24,7 +29,7 @@ public class AssemblerCMD
 		{
 			"-exe", 
 			"-in<F:\\Development\\Projects\\jasm\\commandline\\main.bin>",
-			"-spd<50>"
+			"-speed<50>"
 		};
 		new AssemblerCMD(args);
 		//*/
@@ -55,59 +60,7 @@ public class AssemblerCMD
 		 */
 		if (option.startsWith("-exe"))
 		{
-			BytecodeExecution exe = new BytecodeExecution();
-			
-			int i = 1;
-			int l = args.length;
-			for (; i<l; i++)
-			{
-				String arg = args[i];
-				
-				if (arg.startsWith("-in<"))
-				{
-					String file = arg.substring(4, arg.length()-1);
-					exe.loadFile(file);
-					continue;
-				}
-				
-				if (arg.startsWith("-mem<"))
-				{
-					String mem = arg.substring(5, arg.length()-1);
-					if (ParserUtility.isInteger(mem))
-					{
-						int size = Integer.parseInt(mem);
-						exe.setMemorySize(size);
-					}
-					continue;
-				}
-				
-				if (arg.startsWith("-org<"))
-				{
-					String org = arg.substring(5, arg.length()-1);
-					if (ParserUtility.isInteger(org))
-					{
-						int origin = Integer.parseInt(org);
-						exe.setOrigin(origin);
-					}
-					continue;
-				}
-				
-				if (arg.startsWith("-spd<"))
-				{
-					String speed = arg.substring(5, arg.length()-1);
-					if (ParserUtility.isInteger(speed))
-					{
-						int s = Integer.parseInt(speed);
-						exe.setCycleRate(s);
-					}
-					continue;
-				}
-				
-				System.out.println("Argument not recognized: "+arg);
-			}
-			
-			exe.execute();
-			
+			executeBinary(args);
 			return;
 		}
 		
@@ -116,55 +69,7 @@ public class AssemblerCMD
 		 */
 		if (option.startsWith("-asm"))
 		{
-			SourceAssembler asm = new SourceAssembler();
-			
-			int i = 1;
-			int l = args.length;
-			for (; i<l; i++)
-			{
-				String arg = args[i];
-				
-				if (arg.startsWith("-in<"))
-				{
-					String file = arg.substring(4, arg.length()-1);
-					asm.setInputFile(file);
-					continue;
-				}
-				
-				if (arg.startsWith("-out<"))
-				{
-					String file = arg.substring(5, arg.length()-1);
-					asm.setOutputFile(file);
-					continue;
-				}
-				
-				if (arg.startsWith("-log<"))
-				{
-					String log = arg.substring(5, arg.length()-1);
-					if (log.contains("P"))
-					{
-						asm.setParserVerbose(true);
-					}
-					if (log.contains("T"))
-					{
-						asm.setTranslationVerbose(true);
-					}
-					if (log.contains("A"))
-					{
-						asm.setAssemblerVerbose(true);
-					}
-					if (log.contains("M"))
-					{
-						asm.setMachineCodeVerbose(true);
-					}
-					continue;
-				}
-				
-				System.out.println("Argument not recognized: "+arg);
-			}
-			
-			asm.assemble();
-			
+			assemblySourceCode(args);
 			return;
 		}
 		
@@ -172,5 +77,155 @@ public class AssemblerCMD
 		 * error
 		 */
 		System.out.println("Unrecognized command: "+option+"\n");
+	}
+	
+	private void assemblySourceCode(String[] args) 
+	{
+		SourceAssembler asm = new SourceAssembler();
+		
+		int i = 1;
+		int l = args.length;
+		for (; i<l; i++)
+		{
+			String arg = args[i];
+			
+			if (arg.startsWith("-in<"))
+			{
+				String file = arg.substring(4, arg.length()-1);
+				asm.setInputFile(file);
+				continue;
+			}
+			
+			if (arg.startsWith("-out<"))
+			{
+				String file = arg.substring(5, arg.length()-1);
+				asm.setOutputFile(file);
+				continue;
+			}
+			
+			if (arg.startsWith("-log<"))
+			{
+				String log = arg.substring(5, arg.length()-1);
+				if (log.contains("P"))
+				{
+					asm.setParserVerbose(true);
+				}
+				if (log.contains("T"))
+				{
+					asm.setTranslationVerbose(true);
+				}
+				if (log.contains("A"))
+				{
+					asm.setAssemblerVerbose(true);
+				}
+				if (log.contains("M"))
+				{
+					asm.setMachineCodeVerbose(true);
+				}
+				continue;
+			}
+			
+			System.out.println("Argument not recognized: "+arg);
+		}
+		
+		asm.assemble();
+	}
+
+	private void executeBinary(String[] args) 
+	{
+		BytecodeExecution exe = new BytecodeExecution();
+		
+		int i = 1;
+		int l = args.length;
+		for (; i<l; i++)
+		{
+			String arg = args[i];
+			
+			if (arg.startsWith("-in<"))
+			{
+				String inFile = arg.substring(4, arg.length()-1);
+				exe.loadFile(inFile);
+				continue;
+			}
+			
+			if (arg.startsWith("-mem<"))
+			{
+				String mem = arg.substring(5, arg.length()-1);
+				if (ParserUtility.isInteger(mem))
+				{
+					int size = Integer.parseInt(mem);
+					exe.setMemorySize(size);
+				}
+				continue;
+			}
+			
+			if (arg.startsWith("-speed<"))
+			{
+				String speed = arg.substring(7, arg.length()-1);
+				if (ParserUtility.isInteger(speed))
+				{
+					int s = Integer.parseInt(speed);
+					exe.setCycleRate(s);
+				}
+				continue;
+			}
+			
+			System.out.println("Argument not recognized: "+arg);
+		}
+		
+		// load plugins
+		File file = new File("plugins/");
+		if (!file.exists()) file.mkdirs();
+		File[] list = file.listFiles();
+		for (File f : list)
+		{
+			if (!f.isDirectory())
+			{
+				String path = f.getAbsolutePath();
+				if (path.endsWith(".jar") || path.endsWith(".war"))
+				{
+					loadJarFile(path, exe);
+				}
+			}
+		}
+		
+		exe.execute();
+	}
+
+	private void loadJarFile(String plug, BytecodeExecution exe)
+	{
+		JarLoader jloader = new JarLoader();
+		jloader.loadJarClasses(plug);
+		
+		Class<?> foundClass = jloader.findBySuperClass(VMPlugin.class);
+		if (foundClass == null) 
+		{
+			System.err.println(plug+" does not contain a 'VMPlugin' class instance.");
+			return;
+		}
+		
+		@SuppressWarnings("unchecked")
+		Class<? extends VMPlugin> pluginClass = (Class<? extends VMPlugin>) foundClass;
+		VMPlugin plugin = null;
+		
+		try 
+		{
+			plugin = pluginClass.getDeclaredConstructor().newInstance();
+		} 
+		catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		if (plugin != null)
+		{
+			System.out.println("Loaded plugin: "+foundClass.getName()+" ("+plug+").");
+			exe.addPlugin(plugin);
+		}
+		else
+		{
+			System.err.println("Failed to instantiate "+foundClass.getName()+" ("+plug+").");
+		}
 	}
 }

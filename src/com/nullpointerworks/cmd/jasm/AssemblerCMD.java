@@ -15,7 +15,7 @@ public class AssemblerCMD
 	{
 		new AssemblerCMD(args);
 		
-		//*
+		/*
 		args = new String[] 
 		{
 			"-asm", 
